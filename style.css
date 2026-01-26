@@ -437,17 +437,18 @@ input[type=range]::-webkit-slider-thumb {
 
     /* Envelope Scaling */
     .envelope-wrapper {
-        transform: scale(0.9);
-        /* Slight shrink to be safe */
+        transform: scale(0.75);
+        /* Zoom out significantly to fit 300px envelope on small screens */
+        transform-origin: center top;
+        /* Scale from top to keep it visible */
+        margin-bottom: -40px;
+        /* Compensate for empty space created by scale */
     }
 
     .envelope {
-        width: 100%;
-        /* Fluid width */
-        max-width: 280px;
-        /* Ensure it doesn't overflow small screens */
-        height: 180px;
-        /* Slightly shorter */
+        /* Remove fluid width, keep fixed geometry for borders to work */
+        width: 300px;
+        height: 200px;
     }
 
     .envelope .front,
