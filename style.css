@@ -1,0 +1,474 @@
+body {
+    background: linear-gradient(135deg, #2b0a16 0%, #4a192c 100%);
+    /* Deep Burgundy */
+    color: #fff0f5;
+    /* Lavender Blush / Cream */
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+header {
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3em;
+    background: linear-gradient(to right, #ffc1cc, #ff4081);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #ffc1cc;
+    font-weight: 300;
+}
+
+/* Grid de 100 días */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 15px;
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 50px;
+}
+
+.day-box {
+    background: rgba(255, 255, 255, 0.05);
+    /* Glassmorphism */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    position: relative;
+    color: rgba(255, 240, 245, 0.7);
+}
+
+/* Estados de los días */
+.day-box.locked {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.day-box.locked::after {
+    content: "🔒";
+    font-size: 0.8em;
+    display: block;
+    opacity: 0.5;
+}
+
+/* Días bloqueados por TIEMPO (futuro) */
+.day-box.time-locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 64, 129, 0.1);
+}
+
+.day-box.time-locked::after {
+    content: "⏳";
+}
+
+.day-box:hover {
+    transform: translateY(-3px) scale(1.05);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 15px rgba(255, 64, 129, 0.2);
+    border-color: rgba(255, 64, 129, 0.4);
+}
+
+.day-box.unlocked {
+    background: linear-gradient(135deg, #ffc1cc, #ff4081);
+    /* Rose Gold to Hot Pink */
+    color: #2b0a16;
+    border: none;
+    box-shadow: 0 0 15px rgba(255, 64, 129, 0.6);
+}
+
+/* Modales */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: #2b0a16;
+    /* Dark Burgundy */
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+    text-align: left;
+    position: relative;
+    border: 1px solid #ff4081;
+    /* Pink border */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.login-box {
+    text-align: center;
+}
+
+input {
+    padding: 10px;
+    margin: 10px 0;
+    width: 80%;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #ffc1cc, #ff4081);
+    border: none;
+    border-radius: 20px;
+    color: #2b0a16;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 64, 129, 0.4);
+}
+
+.error {
+    color: #ff5555;
+    font-size: 0.9em;
+    height: 20px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #ffc1cc;
+}
+
+/* --- ENVELOPE ANIMATION --- */
+.envelope-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    perspective: 1000px;
+}
+
+.envelope {
+    width: 300px;
+    height: 200px;
+    background: #e0e0e0;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.envelope:hover {
+    transform: scale(1.02);
+}
+
+/* Partes del sobre */
+.envelope .front {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    border-bottom: 120px solid #ececec;
+    /* Color sobre cerrado */
+    z-index: 3;
+    pointer-events: none;
+}
+
+.envelope .back {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #d6d6d6;
+    z-index: 1;
+}
+
+.envelope .flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    border-top: 130px solid #cfcfcf;
+    /* Solapa */
+    transform-origin: top;
+    transition: transform 0.6s ease-in-out, z-index 0.6s;
+    z-index: 4;
+}
+
+/* Sello de Lacre */
+.wax-seal {
+    position: absolute;
+    top: 60px;
+    /* Centrado en la punta de la solapa */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background: #d32f2f;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.2);
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.wax-seal::after {
+    content: "❤️";
+    font-size: 1.2em;
+    color: rgba(0, 0, 0, 0.2);
+}
+
+.envelope.open .wax-seal {
+    opacity: 0;
+    transform: translateX(-50%) scale(1.5);
+    /* Efecto romper */
+    pointer-events: none;
+}
+
+/* Carta interior */
+.envelope .letter {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    background: white;
+    color: #333;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.6s ease-in-out, top 0.6s, z-index 0.1s, opacity 0.3s;
+    /* FIX: Initial state hidden or strictly behind */
+    z-index: 1;
+    opacity: 0;
+    overflow: hidden;
+    height: 180px;
+}
+
+/* --- ESTADO ABIERTO --- */
+.envelope.open .flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+}
+
+.envelope.open .letter {
+    transform: translateY(-100px);
+    /* Saca la carta hacia arriba */
+    z-index: 10;
+    /* Pasa por encima de todo */
+    opacity: 1;
+    height: auto;
+    min-height: 300px;
+    max-height: 60vh;
+    animation: letter-expand 0.5s forwards 0.6s;
+    overflow-y: auto;
+}
+
+@keyframes letter-expand {
+    0% {
+        transform: translateY(-100px) scale(0.9);
+    }
+
+    100% {
+        transform: translateY(-50px) scale(1);
+        width: 320px;
+        left: -10px;
+    }
+}
+
+/* Slider Custom */
+.slider-container {
+    margin-top: 40px;
+    width: 80%;
+    text-align: center;
+    position: relative;
+}
+
+.slider-text {
+    margin-top: 10px;
+    color: #bb86fc;
+    font-size: 0.9em;
+    opacity: 0.8;
+    animation: pulse 2s infinite;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: #333;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #b50938;
+    /* Color lacre */
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(181, 9, 56, 0.8);
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
+}
+
+.tap-hint {
+    margin-top: 20px;
+    color: #bb86fc;
+    font-size: 0.9em;
+    animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(5px);
+    }
+}
+
+/* Ajustes de texto */
+.letter-text {
+    font-size: 0.9em;
+    line-height: 1.6;
+    white-space: pre-line;
+    text-align: left;
+}
+
+#modal-title {
+    color: #d50000;
+    margin-top: 0;
+}
+
+/* Notificaciones */
+#notification-modal .modal-content {
+    border-color: #ff4081;
+    box-shadow: 0 0 20px rgba(255, 64, 129, 0.3);
+}
+
+#notif-message {
+    font-size: 1.1em;
+    margin: 20px 0;
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2em;
+        /* Smaller title */
+        margin-bottom: 20px;
+    }
+
+    .grid-container {
+        gap: 10px;
+        /* Thinner gaps */
+        padding: 10px;
+    }
+
+    .day-box {
+        border-radius: 8px;
+        /* Slightly less rounded */
+        font-size: 0.9em;
+    }
+
+    /* Envelope Scaling */
+    .envelope-wrapper {
+        transform: scale(0.9);
+        /* Slight shrink to be safe */
+    }
+
+    .envelope {
+        width: 100%;
+        /* Fluid width */
+        max-width: 280px;
+        /* Ensure it doesn't overflow small screens */
+        height: 180px;
+        /* Slightly shorter */
+    }
+
+    .envelope .front,
+    .envelope .back,
+    .envelope .flap {
+        /* Adjust border sizes if needed, or rely on scale */
+    }
+
+    /* On mobile, CSS triangles are tricky to make fluid without SVG. 
+       Fixed scaling (transform) is safer for preserving geometry. */
+
+    .slider-container {
+        width: 90%;
+    }
+
+    .modal-content {
+        padding: 20px;
+        width: 85%;
+    }
+
+    .wax-seal {
+        top: 50px;
+    }
+}

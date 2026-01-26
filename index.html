@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Días Contigo</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <header>
+        <h1>100 Días, 100 Razones</h1>
+        <p>Introduce la clave del día para desbloquear mi corazón.</p>
+    </header>
+
+    <div class="grid-container" id="grid">
+    </div>
+
+    <div id="letter-modal" class="modal hidden">
+        <div class="envelope-wrapper">
+            <span class="close-btn">&times;</span>
+            <div id="envelope" class="envelope">
+                <div class="front"></div>
+                <div class="back"></div>
+                <div class="flap"></div>
+                <!-- Sello de lacre -->
+                <div class="wax-seal"></div>
+                <div class="letter">
+                    <h2 id="modal-title">...</h2>
+                    <div id="modal-body" class="letter-text"></div>
+                </div>
+            </div>
+
+            <!-- Deslizador -->
+            <div class="slider-container">
+                <input type="range" id="open-slider" min="0" max="100" value="0">
+                <div class="slider-text">Desliza para abrir ❤️</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content login-box">
+            <h3>Día <span id="day-number-display"></span></h3>
+            <p>Introduce la contraseña mágica:</p>
+            <input type="password" id="pass-input" placeholder="Contraseña...">
+            <button id="unlock-btn">Abrir</button>
+            <p id="error-msg" class="error"></p>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notification-modal" class="modal hidden">
+        <div class="modal-content login-box">
+            <h3 id="notif-title">Mensaje del Corazón</h3>
+            <p id="notif-message"></p>
+            <button id="notif-ok-btn">Entendido</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>
