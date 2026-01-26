@@ -34,6 +34,9 @@ const notifOkBtn = document.getElementById('notif-ok-btn');
 let currentDaySelected = null;
 const START_DATE_KEY = 'startDate_100days';
 
+// AUDIO GLOBAL (para detenerlo al cerrar)
+let currentAudio = null;
+
 // --- SYNC INICIAL (Nube -> Local) ---
 async function syncStartDate() {
     try {
@@ -156,9 +159,6 @@ unlockBtn.addEventListener('click', async () => {
                 localStorage.setItem(`day-${currentDaySelected}-unlocked`, 'true');
 
                 // --- INICIO DEL CONTEO ---
-                // Si es la primera vez que desbloquea algo (o específicamente el día 1, 
-                // pero asumiremos que el primer desbloqueo inicia el conteo pase lo que pase)
-                // --- INICIO DEL CONTEO ---
                 // Si es la primera vez que desbloquea algo, guardamos la fecha
                 if (!localStorage.getItem(START_DATE_KEY)) {
                     const nowISO = new Date().toISOString();
@@ -178,8 +178,6 @@ unlockBtn.addEventListener('click', async () => {
                     // Recargamos para actualizar los candados de tiempo
                     setTimeout(() => location.reload(), 2000);
                 }
-
-                updateGridVisual(currentDaySelected);
 
                 updateGridVisual(currentDaySelected);
                 loginModal.classList.remove('active');
@@ -211,7 +209,8 @@ async function loadLetterContent(day) {
 
         if (docSnap.exists()) {
             const data = docSnap.data();
-            showLetter(data.titulo, data.carta);
+            // Le pasamos también el 'day' para saber qué música reproducir
+            showLetter(data.titulo, data.carta, day);
         } else {
             showNotification("Aún no he escrito la carta de hoy... ¡vuelve más tarde!");
         }
@@ -221,8 +220,32 @@ async function loadLetterContent(day) {
     }
 }
 
+// --- AUDIO HELPERS ---
+function stopAudio() {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0; // Reiniciar al principio
+        currentAudio = null;
+    }
+}
+
+function playDailyMusic(day) {
+    stopAudio(); // Detener anterior si hubiera
+    // Asumimos formato: audio/dia 1.mp3, audio/dia 2.mp3 ...
+    // Asegurarse de que el usuario haya creado carpeta audio y los archivos con ese nombre exacto
+    const audioPath = `audio/dia ${day}.mp3`;
+
+    currentAudio = new Audio(audioPath);
+    currentAudio.volume = 0.5; // Volumen medio para no asustar
+    currentAudio.loop = true;  // Repetir canción mientras lee
+
+    currentAudio.play().catch(e => {
+        console.warn("No se pudo reproducir audio (falta archivo o interacción del usuario):", e);
+    });
+}
+
 // --- UI HELPERS ---
-function showLetter(title, body) {
+function showLetter(title, body, day) {
     const envelope = document.getElementById('envelope');
     const sliderContainer = document.querySelector('.slider-container');
     const slider = document.getElementById('open-slider');
@@ -231,6 +254,9 @@ function showLetter(title, body) {
     envelope.classList.remove('open');
     sliderContainer.style.display = 'block'; // Mostrar slider
     slider.value = 0; // Resetear slider
+
+    // Asegurar que no suene nada al abrir el modal, espera al slider
+    stopAudio();
 
     // Llenar contenido
     document.getElementById('modal-title').textContent = title;
@@ -251,6 +277,9 @@ function showLetter(title, body) {
             envelope.classList.add('open');
             // Ocultar slider suavemente
             sliderContainer.style.display = 'none';
+
+            // --- REPRODUCIR MÚSICA AHORA ---
+            if (day) playDailyMusic(day);
         }
     });
 }
@@ -279,10 +308,20 @@ function showNotification(msg) {
 if (notifOkBtn) notifOkBtn.addEventListener('click', () => notifModal.classList.remove('active'));
 
 // Cerrar modales
-if (closeModal) closeModal.addEventListener('click', () => letterModal.classList.remove('active'));
+// Modificar el cierre para detener música
+if (closeModal) {
+    closeModal.addEventListener('click', () => {
+        letterModal.classList.remove('active');
+        stopAudio();
+    });
+}
+
 window.onclick = (event) => {
     if (event.target == loginModal) loginModal.classList.remove('active');
-    if (event.target == letterModal) letterModal.classList.remove('active');
+    if (event.target == letterModal) {
+        letterModal.classList.remove('active');
+        stopAudio();
+    }
     if (event.target == notifModal) notifModal.classList.remove('active');
 }
 
